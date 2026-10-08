@@ -1,0 +1,16 @@
+{
+  "sample_zip": "DASHBOARD-MAKING.zip",
+  "files": [
+    "09.24.2026_INVENTORY_AGEING_REPORT.xlsx",
+    "09.24.2026_INVENTORY_VALUATION_REPORT.xlsx",
+    "Assemblies (20).xlsx",
+    "Bill (7).xlsx",
+    "Composite_Item.xlsx",
+    "Item (2).xlsx",
+    "Purchase_Order.xlsx",
+    "Purchase_Receive.xlsx",
+    "Transfer_Order (2).xlsx",
+    "Vendors (6).xlsx"
+  ],
+  "b2b_sources_present": false
+}

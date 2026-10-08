@@ -1,0 +1,16 @@
+create extension if not exists pgcrypto;
+create table if not exists app_admins(user_id uuid primary key references auth.users(id) on delete cascade,email text not null unique,created_at timestamptz not null default now());
+create table if not exists upload_batch(id uuid primary key default gen_random_uuid(),uploaded_by uuid not null references auth.users(id),original_filename text not null,status text not null check(status in ('preview','ready','committed','failed')),created_at timestamptz not null default now(),committed_at timestamptz);
+create table if not exists upload_file_log(id uuid primary key default gen_random_uuid(),batch_id uuid not null references upload_batch(id) on delete cascade,source_key text not null,file_name text not null,sheet_name text,header_row integer,row_count integer not null default 0,confidence numeric(5,4),warnings jsonb not null default '[]'::jsonb);
+create table if not exists staging_row(id bigint generated always as identity primary key,batch_id uuid not null references upload_batch(id) on delete cascade,source_key text not null,file_name text not null,sheet_name text not null,row_number integer not null,payload jsonb not null);
+create index if not exists staging_row_batch_source_idx on staging_row(batch_id,source_key);
+create index if not exists staging_row_payload_gin on staging_row using gin(payload);
+alter table app_admins enable row level security;
+alter table upload_batch enable row level security;
+alter table upload_file_log enable row level security;
+alter table staging_row enable row level security;
+create or replace function is_app_admin() returns boolean language sql stable security definer set search_path=public as $$ select exists(select 1 from app_admins where user_id=auth.uid()); $$;
+create policy "admin read app admin" on app_admins for select to authenticated using(is_app_admin());
+create policy "admin all uploads" on upload_batch for all to authenticated using(is_app_admin()) with check(is_app_admin());
+create policy "admin all upload logs" on upload_file_log for all to authenticated using(is_app_admin()) with check(is_app_admin());
+create policy "admin all staging" on staging_row for all to authenticated using(is_app_admin()) with check(is_app_admin());

@@ -1,0 +1,4 @@
+export type SourceKey="inventory_ageing"|"inventory_valuation"|"assemblies"|"bills"|"composite_items"|"items"|"purchase_orders"|"purchase_receives"|"transfers"|"vendors"|"b2b_sales_orders"|"b2b_invoices";
+export type ParsedSheet={name:string;headers:string[];rows:Record<string,unknown>[];detectedHeaderRow:number;warnings:string[]};
+export type ParsedSource={key:SourceKey;fileName:string;confidence:number;reason:string;sheets:ParsedSheet[];warnings:string[]};
+export type UploadRun={id:string;createdAt:string;fileName:string;status:"preview"|"ready"|"committed"|"failed";sources:ParsedSource[];warnings:string[]};
